@@ -1,0 +1,85 @@
+#include <bits/stdc++.h>
+int n;
+bool bun(int i,int j)
+{
+    return 1<=i&&1<=j&&j<=n&&i<=n;
+}
+int16_t dx[]= {-1,1,0,0};
+int16_t dy[]= {0,0,-1,1};
+bool mat[1001][1001];
+int drum1[101][101];
+int drum2[101][101];
+int drum3[101][101];
+std::vector<std::pair<int,int>>v;
+void lee(int istart,int jstart,int drum[101][101]) {
+    std::queue<std::pair<int,int>>q;
+    q.push(std::make_pair(istart,jstart));
+    drum[istart][jstart]=0;
+    while(!q.empty())
+    {
+        int x=q.front().first;
+        int y=q.front().second;
+        q.pop();
+        for(int i=0; i<4; i++)
+        {
+            if((bun(dx[i]+x,dy[i]+y))&&mat[dx[i]+x][dy[i]+y]==0&&drum[dx[i]+x][dy[i]+y]==0)
+            {
+                drum[dx[i]+x][dy[i]+y]=drum[x][y]+1;
+                q.push(std::make_pair(dx[i]+x,dy[i]+y));
+            }
+        }
+    }
+}
+bool cmp(std::pair<int,int>a,std::pair<int,int>b)
+{
+    if(a.first!=b.first)
+        return a.first<b.first;
+    else return a.second<b.second;
+
+}
+int main()
+{
+    std::cin>>n;
+    for(int i=1; i<=n; i++){
+        for(int j=1; j<=n; j++)
+        {
+            std::cin>>mat[i][j];
+        }
+    }
+    for(int j=0; j<3; j++) {
+        int x,y;
+        std::cin>>x>>y;
+        v.push_back(std::make_pair(x,y));
+        if(j==0)
+            lee(x,y,drum1);
+        else if(j==1)
+            lee(x,y,drum2);
+        else lee(x,y,drum3);
+    }
+    int ans=1000000;
+    //(1,1) - A - B - C - (n,n)
+    int s=drum1[1][1]+drum2[v[0].first][v[0].second]+drum3[v[1].first][v[1].second]+drum3[n][n];
+    ans=std::min(ans,s);
+    //std::cout<<s<<' ';
+    //(1,1) - A - C - B - (n,n)
+    s=drum1[1][1]+drum3[v[0].first][v[0].second]+drum2[v[2].first][v[2].second]+drum2[n][n];
+    ans=std::min(ans,s);
+    //std::cout<<s<<' ';
+    //(1,1) - B - A - C - (n,n)
+    s=drum2[1][1]+drum1[v[1].first][v[1].second]+drum3[v[0].first][v[0].second]+drum3[n][n];
+    ans=std::min(ans,s);
+    //std::cout<<s<<' ';
+    //(1,1) - B - C - A - (n,n)
+    s=drum2[1][1]+drum3[v[1].first][v[1].second]+drum1[v[2].first][v[2].second]+drum1[n][n];
+    ans=std::min(ans,s);
+    //std::cout<<s<<' ';
+    //(1,1) - C - A - B - (n,n)
+    s=drum3[1][1]+drum1[v[2].first][v[2].second]+drum2[v[0].first][v[0].second]+drum2[n][n];
+    ans=std::min(ans,s);
+    //std::cout<<s<<' ';
+    //(1,1) - C - B - A - (n,n)
+    s=drum3[1][1]+drum2[v[2].first][v[2].second]+drum1[v[1].first][v[1].second]+drum1[n][n];
+    ans=std::min(ans,s);
+    std::cout<<ans;
+    return 0;
+}
